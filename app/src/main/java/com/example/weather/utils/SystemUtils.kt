@@ -25,7 +25,7 @@ fun checkHasLocationPermission(context: Context): Boolean {
     ) == PackageManager.PERMISSION_GRANTED
 }
 
-fun requestLocationPermission(activity: AppCompatActivity) {
+fun requestLocationPermission(activity: Activity) {
     if (ContextCompat.checkSelfPermission(
             activity,
             Manifest.permission.ACCESS_FINE_LOCATION

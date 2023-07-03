@@ -1,7 +1,5 @@
 package com.example.weather.ui.activities
 
-import android.app.AlertDialog
-import android.content.DialogInterface
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
@@ -9,12 +7,11 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.example.weather.R
+import com.example.weather.databinding.WeatherActivityBinding
 import com.example.weather.network.models.CurrentWeather
 import com.example.weather.network.responses.getCurrentWeather
 import com.example.weather.ui.adapters.CurrentWeatherAdapter
-import com.example.weather.utils.Location
 import com.example.weather.utils.hasInternetConnectivity
 import com.example.weather.utils.readLocationPreferences
 import kotlinx.coroutines.launch
@@ -24,42 +21,16 @@ internal class CurrentWeatherActivity : AppCompatActivity() {
     private val weatherAdapter = CurrentWeatherAdapter(this)
 
     private val addLocationActivityResultLauncher =
-        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-            if (result.resultCode == RESULT_OK) {
-                fetchCurrentWeather(readLocationPreferences(this))
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+            if (it.resultCode == RESULT_OK) {
+                initCurrentWeather()
             }
         }
 
-    private var locationsData: List<Location>? = null
+    private lateinit var binding: WeatherActivityBinding
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.weather_activity)
-
-        val recyclerView: RecyclerView = findViewById(R.id.weather_cards)
-
-        recyclerView.layoutManager = LinearLayoutManager(this)
-        recyclerView.adapter = weatherAdapter
-
-        fun init(dialogInterface: DialogInterface?) {
-            dialogInterface?.apply { dismiss() }
-            if (hasInternetConnectivity(this)) {
-                readLocationPreferences(this).let {
-                    locationsData = it
-                    fetchCurrentWeather(it)
-                }
-            } else {
-                AlertDialog.Builder(this)
-                    .setTitle(getString(R.string.no_internet_connection_title))
-                    .setMessage(getString(R.string.no_internet_connection_description))
-                    .setPositiveButton(getString(R.string.reload)) { dialog, _ -> init(dialog) }
-                    .setCancelable(false)
-                    .show()
-            }
-        }
-
-        init(null)
-    }
+    private var lastLat: Double? = null
+    private var lastLon: Double? = null
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.menu_add_location, menu)
@@ -72,8 +43,8 @@ internal class CurrentWeatherActivity : AppCompatActivity() {
                 addLocationActivityResultLauncher.launch(
                     AddLocationActivity.getIntent(
                         this,
-                        locationsData?.lastOrNull()?.lat,
-                        locationsData?.lastOrNull()?.lon
+                        lastLat,
+                        lastLon
                     )
                 )
                 return true
@@ -82,18 +53,57 @@ internal class CurrentWeatherActivity : AppCompatActivity() {
         return super.onOptionsItemSelected(item)
     }
 
-    private fun fetchCurrentWeather(locations: List<Location>) {
-        locations.takeIf {
-            lifecycleScope.launch {
-                val weatherQueue = ConcurrentLinkedQueue<CurrentWeather>()
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
 
-                for (location in it) {
-                    weatherQueue.add(getCurrentWeather(location.lat, location.lon))
+        binding = WeatherActivityBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+
+        binding.weatherCards.apply {
+            layoutManager = LinearLayoutManager(this@CurrentWeatherActivity)
+            adapter = weatherAdapter
+        }
+
+        binding.weatherSwipeRefresh.setOnRefreshListener { initCurrentWeather() }
+
+        initCurrentWeather()
+    }
+
+    private fun initCurrentWeather() = with(binding) {
+        if (hasInternetConnectivity(this@CurrentWeatherActivity)) {
+            connectionStatus.text = getString(R.string.online)
+            connectionStatus.setCompoundDrawablesRelativeWithIntrinsicBounds(
+                R.drawable.ic_circle,
+                0,
+                0,
+                0
+            )
+            readLocationPreferences(this@CurrentWeatherActivity).let {
+                lastLat = it.lastOrNull()?.lat
+                lastLon = it.lastOrNull()?.lon
+                it.takeIf {
+                    lifecycleScope.launch {
+                        val weatherQueue = ConcurrentLinkedQueue<CurrentWeather>()
+
+                        for (location in it) {
+                            weatherQueue.add(getCurrentWeather(location.lat, location.lon))
+                        }
+
+                        weatherAdapter.updateWeather(it, weatherQueue.toList())
+                        binding.weatherSwipeRefresh.isRefreshing = false
+                    }
+                    it.isNotEmpty()
                 }
-
-                weatherAdapter.updateWeather(it, weatherQueue.toList())
             }
-            it.isNotEmpty()
+        } else {
+            binding.connectionStatus.text = getString(R.string.offline)
+            binding.connectionStatus.setCompoundDrawablesRelativeWithIntrinsicBounds(
+                R.drawable.ic_offline_pin,
+                0,
+                0,
+                0
+            )
+            binding.weatherSwipeRefresh.isRefreshing = false
         }
     }
 }

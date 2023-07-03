@@ -113,7 +113,7 @@
                 android:layout_alignParentEnd="true"
                 android:layout_alignParentBottom="true"
                 android:contentDescription="@string/removing_location_title"
-                android:src="@drawable/ic_delete_forever_24"
+                android:src="@drawable/ic_delete"
                 android:visibility="gone" />
 
         </RelativeLayout>

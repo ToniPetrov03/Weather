@@ -29,4 +29,6 @@
     <string name="cancel_action">Откажи</string>
     <string name="reload">Презареди</string>
     <string name="activate">Активирай</string>
+    <string name="online">Онлайн</string>
+    <string name="offline">Офлайн</string>
 </resources>

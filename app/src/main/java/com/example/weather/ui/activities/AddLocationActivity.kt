@@ -6,9 +6,6 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.MotionEvent
-import android.widget.Button
-import android.widget.ImageView
-import android.widget.ProgressBar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.widget.doAfterTextChanged
 import com.example.weather.DEFAULT_LAT_LOCATION_BG
@@ -23,7 +20,6 @@ import com.example.weather.utils.getCurrentLocation
 import com.example.weather.utils.requestLocationPermission
 import com.example.weather.utils.requestTurnOnGPS
 import com.example.weather.utils.toggleVisibility
-import com.google.android.material.textfield.TextInputEditText
 import org.osmdroid.config.Configuration
 import org.osmdroid.library.BuildConfig
 import org.osmdroid.util.GeoPoint
@@ -80,7 +76,7 @@ class AddLocationActivity : AppCompatActivity(), LocationCallback {
         requestLocationPermission(this@AddLocationActivity)
     }
 
-    override fun onNoLocationProvided(): Unit = with(binding){
+    override fun onNoLocationProvided(): Unit = with(binding) {
         toggleVisibility(spinner, currentLocationButton)
         AlertDialog.Builder(this@AddLocationActivity)
             .setTitle(getString(R.string.gps_not_activated_title))
