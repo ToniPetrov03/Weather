@@ -60,7 +60,7 @@ internal class FutureWeatherAdapter(
         holder.weatherDescription.text = weather.description
         holder.temperature.text = context.getString(R.string.temperature, weather.temperature)
         holder.feelsLike.text = context.getString(R.string.feels_like, weather.feelsLike)
-        holder.wind.text = mapWindSpeedToText(weather.windSpeed, context)
+        holder.wind.text = mapWindSpeedToText(context, weather.windSpeed)
         holder.chanceOfRain.text = context.getString(R.string.chance_of_rain, weather.chanceOfRain)
         holder.sunriseSunset.visibility = View.GONE
     }

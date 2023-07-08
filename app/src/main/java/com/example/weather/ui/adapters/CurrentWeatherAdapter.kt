@@ -13,9 +13,8 @@ import com.bumptech.glide.Glide
 import com.example.weather.ICONS_BASE_URL
 import com.example.weather.ICONS_PNG_FORMAT
 import com.example.weather.R
-import com.example.weather.network.models.CurrentWeather
 import com.example.weather.ui.activities.FutureWeatherActivity
-import com.example.weather.utils.Location
+import com.example.weather.utils.WeatherData
 import com.example.weather.utils.mapWindSpeedToText
 import com.example.weather.utils.removeLocationPreference
 
@@ -23,8 +22,7 @@ internal class CurrentWeatherAdapter(
     private val context: Context,
 ) : RecyclerView.Adapter<CurrentWeatherAdapter.ViewHolder>() {
 
-    private var locations: MutableList<Location> = mutableListOf()
-    private var weatherList: MutableList<CurrentWeather> = mutableListOf()
+    private var weatherList: MutableList<WeatherData> = mutableListOf()
 
     @SuppressLint("ClickableViewAccessibility")
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -48,35 +46,45 @@ internal class CurrentWeatherAdapter(
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val weather = weatherList[position]
-        val location = locations[position].name
+        val weatherData = weatherList[position]
+        val weather = weatherData.currentWeather
 
         Glide.with(context)
-            .load("$ICONS_BASE_URL${weather.icon}$ICONS_PNG_FORMAT")
+            .load("$ICONS_BASE_URL${weather?.icon}$ICONS_PNG_FORMAT")
             .error(R.drawable.img_no_image)
             .into(holder.weatherIconImageView)
 
-        holder.title.text = location
-        holder.weatherDescription.text = weather.description
-        holder.temperature.text = context.getString(R.string.temperature, weather.temperature)
-        holder.feelsLike.text = context.getString(R.string.feels_like, weather.feelsLike)
-        holder.wind.text = mapWindSpeedToText(weather.windSpeed, context)
+        holder.title.text = weatherData.name
+        holder.weatherDescription.text = weather?.description
+        holder.temperature.text = context.getString(R.string.temperature, weather?.temperature)
+        holder.feelsLike.text = context.getString(R.string.feels_like, weather?.feelsLike)
+        holder.wind.text = mapWindSpeedToText(context, weather?.windSpeed)
         holder.sunriseSunset.text =
-            context.getString(R.string.sunrise_sunset, weather.sunrise, weather.sunset)
+            context.getString(R.string.sunrise_sunset, weather?.sunrise, weather?.sunset)
         holder.chanceOfRain.visibility = View.GONE
         holder.deleteIcon.visibility = View.VISIBLE
 
         holder.deleteIcon.setOnClickListener {
-            showDeleteConfirmationDialog(position)
+            AlertDialog.Builder(context)
+                .setTitle(context.getString(R.string.removing_location_title))
+                .setMessage(
+                    context.getString(R.string.removing_location_description, weatherData.name)
+                )
+                .setPositiveButton(context.getString(R.string.continue_action)) { _, _ ->
+                    removeLocation(position, weatherData)
+                }
+                .setNegativeButton(context.getString(R.string.cancel_action), null)
+                .create()
+                .show()
         }
 
         holder.itemView.setOnClickListener {
             context.startActivity(
                 FutureWeatherActivity.getIntent(
                     context,
-                    weather.lat,
-                    weather.lon,
-                    location
+                    weatherData.name,
+                    weatherData.lat,
+                    weatherData.lon,
                 )
             )
         }
@@ -85,32 +93,15 @@ internal class CurrentWeatherAdapter(
     override fun getItemCount() = weatherList.size
 
     @SuppressLint("NotifyDataSetChanged")
-    fun updateWeather(newLocations: List<Location>, newWeather: List<CurrentWeather>) {
-        locations.clear()
-        locations.addAll(newLocations)
+    fun updateWeather(newWeather: List<WeatherData>) {
         weatherList.clear()
         weatherList.addAll(newWeather)
         notifyDataSetChanged()
     }
 
-    private fun showDeleteConfirmationDialog(position: Int) {
-        AlertDialog.Builder(context)
-            .setTitle(context.getString(R.string.removing_location_title))
-            .setMessage(
-                context.getString(R.string.removing_location_description, locations[position].name)
-            )
-            .setPositiveButton(context.getString(R.string.continue_action)) { _, _ ->
-                removeLocation(position)
-            }
-            .setNegativeButton(context.getString(R.string.cancel_action), null)
-            .create()
-            .show()
-    }
-
-    private fun removeLocation(position: Int) {
-        removeLocationPreference(context, position)
-        locations.removeAt(position)
-        weatherList.removeAt(position)
+    private fun removeLocation(position: Int, weatherData: WeatherData) {
+        removeLocationPreference(context, weatherData)
+        weatherList.remove(weatherData)
         notifyItemRemoved(position)
     }
 }

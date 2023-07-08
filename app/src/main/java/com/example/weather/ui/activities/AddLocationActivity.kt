@@ -13,10 +13,10 @@ import com.example.weather.DEFAULT_LON_LOCATION_BG
 import com.example.weather.DEFAULT_ZOOM
 import com.example.weather.R
 import com.example.weather.databinding.AddLocationActivityBinding
-import com.example.weather.utils.Location
 import com.example.weather.utils.LocationCallback
-import com.example.weather.utils.addLocationPreferences
+import com.example.weather.utils.addLocationPreference
 import com.example.weather.utils.getCurrentLocation
+import com.example.weather.utils.getWeathersDataPreference
 import com.example.weather.utils.requestLocationPermission
 import com.example.weather.utils.requestTurnOnGPS
 import com.example.weather.utils.toggleVisibility
@@ -28,14 +28,7 @@ import org.osmdroid.views.overlay.Marker
 
 class AddLocationActivity : AppCompatActivity(), LocationCallback {
     companion object {
-        private const val LAST_LAT = "lastLat"
-        private const val LAST_LON = "lastLon"
-
-        fun getIntent(context: Context, lastLat: Double?, lastLon: Double?) =
-            Intent(context, AddLocationActivity::class.java).apply {
-                putExtra(LAST_LAT, lastLat)
-                putExtra(LAST_LON, lastLon)
-            }
+        fun getIntent(context: Context) = Intent(context, AddLocationActivity::class.java)
     }
 
     private lateinit var binding: AddLocationActivityBinding
@@ -56,10 +49,12 @@ class AddLocationActivity : AppCompatActivity(), LocationCallback {
 
         Configuration.getInstance().userAgentValue = BuildConfig.APPLICATION_ID
 
-        val lat = intent.getDoubleExtra(LAST_LAT, DEFAULT_LAT_LOCATION_BG)
-        val lon = intent.getDoubleExtra(LAST_LON, DEFAULT_LON_LOCATION_BG)
+        val lastLocation = getWeathersDataPreference(this).values.lastOrNull()
 
-        selectedLocation = GeoPoint(lat, lon)
+        selectedLocation = GeoPoint(
+            lastLocation?.lat ?: DEFAULT_LAT_LOCATION_BG,
+            lastLocation?.lon ?: DEFAULT_LON_LOCATION_BG
+        )
 
         setupViews()
     }
@@ -71,17 +66,17 @@ class AddLocationActivity : AppCompatActivity(), LocationCallback {
         updateMarker(map)
     }
 
-    override fun onNoLocationPermission() = with(binding) {
-        toggleVisibility(spinner, currentLocationButton)
-        requestLocationPermission(this@AddLocationActivity)
+    override fun onNoLocationPermission() {
+        toggleVisibility(binding.spinner, binding.currentLocationButton)
+        requestLocationPermission(this)
     }
 
-    override fun onNoLocationProvided(): Unit = with(binding) {
-        toggleVisibility(spinner, currentLocationButton)
-        AlertDialog.Builder(this@AddLocationActivity)
+    override fun onNoLocationProvided() {
+        toggleVisibility(binding.spinner, binding.currentLocationButton)
+        AlertDialog.Builder(this)
             .setTitle(getString(R.string.gps_not_activated_title))
             .setMessage(getString(R.string.gps_not_activated_description))
-            .setPositiveButton(getString(R.string.activate)) { _, _ -> requestTurnOnGPS(this@AddLocationActivity) }
+            .setPositiveButton(getString(R.string.activate)) { _, _ -> requestTurnOnGPS(this) }
             .setNegativeButton(getString(R.string.cancel_action), null)
             .show()
     }
@@ -112,14 +107,11 @@ class AddLocationActivity : AppCompatActivity(), LocationCallback {
         locationName.doAfterTextChanged { addButton.isEnabled = !it.isNullOrEmpty() }
 
         addButton.setOnClickListener {
-            addLocationPreferences(
+            addLocationPreference(
                 this@AddLocationActivity,
-                Location(
-                    locationName.text.toString(),
-                    selectedLocation.latitude,
-                    selectedLocation.longitude
-                )
-
+                locationName.text.toString(),
+                selectedLocation.latitude,
+                selectedLocation.longitude,
             )
             setResult(RESULT_OK)
             finish()

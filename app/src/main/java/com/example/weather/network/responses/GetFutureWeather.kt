@@ -18,14 +18,11 @@ import kotlin.math.roundToInt
 suspend fun getFutureWeather(lat: Double, lon: Double): List<FutureWeather> {
     return withContext(Dispatchers.IO) {
         val response = withContext(Dispatchers.IO) {
-            URL(
-                "$WEATHER_BASE_URL/forecast?lat=$lat&lon=$lon&units=$UNIT&lang=$LANG&appid=${BuildConfig.WEATHER_API_KEY}"
-            ).readText()
+            URL("$WEATHER_BASE_URL/forecast?lat=$lat&lon=$lon&units=$UNIT&lang=$LANG&appid=${BuildConfig.WEATHER_API_KEY}")
+                .readText()
         }
 
-        val futureWeatherResponse = Gson().fromJson(response, FutureWeatherResponse::class.java)
-
-        mapFutureWeatherResponse(futureWeatherResponse)
+        mapFutureWeatherResponse(Gson().fromJson(response, FutureWeatherResponse::class.java))
     }
 }
 

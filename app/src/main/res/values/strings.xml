@@ -15,6 +15,7 @@
     <string name="storm">Ураган</string>
     <string name="violent_storm">Ураган със сила на унищожение</string>
     <string name="wind_speed">%s - %d м/с</string>
+    <string name="wind">Вятър</string>
     <string name="add">Добави</string>
     <string name="add_location">Добави локация</string>
     <string name="adding_location">Добавяне на локация</string>

@@ -1,43 +1,71 @@
 package com.example.weather.utils
 
 import android.content.Context
-import android.content.SharedPreferences
+import com.example.weather.network.models.CurrentWeather
+import com.example.weather.network.models.FutureWeather
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 
-const val LOCATIONS_PREFERENCE_FILE_NAME = "locations_preference"
+const val WEATHER_PREFERENCE_FILE_NAME = "weather_preference"
 
-data class Location(val name: String, val lat: Double, val lon: Double)
+data class WeatherData(
+    val name: String,
+    val lat: Double,
+    val lon: Double,
+    var currentWeather: CurrentWeather?,
+    var futureWeather: List<FutureWeather>?
+)
 
-fun saveLocationPreferences(context: Context, locationList: List<Location>) {
-    val sharedPreferences: SharedPreferences =
-        context.getSharedPreferences(LOCATIONS_PREFERENCE_FILE_NAME, Context.MODE_PRIVATE)
-    val editor: SharedPreferences.Editor = sharedPreferences.edit()
+private inline fun <reified T> jsonParse(json: String): T =
+    Gson().fromJson(json, object : TypeToken<T>() {}.type)
 
-    val json = Gson().toJson(locationList)
-    editor.putString("location_list", json)
-    editor.apply()
-}
+private fun getPreferences(c: Context) =
+    c.getSharedPreferences(WEATHER_PREFERENCE_FILE_NAME, Context.MODE_PRIVATE)
 
-fun readLocationPreferences(context: Context): List<Location> {
-    val sharedPreferences: SharedPreferences =
-        context.getSharedPreferences(LOCATIONS_PREFERENCE_FILE_NAME, Context.MODE_PRIVATE)
-    val json = sharedPreferences.getString("location_list", null)
-    val type = object : TypeToken<List<Location>>() {}.type
+private fun savePreference(c: Context, value: LinkedHashMap<String, WeatherData>) =
+    getPreferences(c)
+        .edit()
+        .putString("data", Gson().toJson(value))
+        .apply()
 
-    return Gson().fromJson(json, type) ?: emptyList()
-}
+private fun updateWeatherPreference(
+    c: Context,
+    lat: Double,
+    lon: Double,
+    newCurrentWeather: CurrentWeather?,
+    newFutureWeather: List<FutureWeather>?
+) {
+    val weathersData = getWeathersDataPreference(c)
 
-fun addLocationPreferences(context: Context, location: Location) {
-    val locationList = readLocationPreferences(context).toMutableList()
-    locationList.add(location)
-    saveLocationPreferences(context, locationList)
-}
-
-fun removeLocationPreference(context: Context, index: Int) {
-    val locationList = readLocationPreferences(context).toMutableList()
-    if (index in 0 until locationList.size) {
-        locationList.removeAt(index)
-        saveLocationPreferences(context, locationList)
+    weathersData["$lat/$lon"]?.apply {
+        newCurrentWeather?.let { currentWeather = it }
+        newFutureWeather?.let { futureWeather = it }
     }
+
+    savePreference(c, weathersData)
+}
+
+fun updateWeatherPreference(c: Context, lat: Double, lon: Double, weather: CurrentWeather) =
+    updateWeatherPreference(c, lat, lon, weather, null)
+
+fun updateWeatherPreference(c: Context, lat: Double, lon: Double, weather: List<FutureWeather>) =
+    updateWeatherPreference(c, lat, lon, null, weather)
+
+fun getWeathersDataPreference(c: Context): LinkedHashMap<String, WeatherData> =
+    getPreferences(c).getString("data", null)?.let { jsonParse(it) } ?: LinkedHashMap()
+
+fun addLocationPreference(c: Context, name: String, lat: Double, lon: Double) {
+    val weathersData = getWeathersDataPreference(c)
+
+    weathersData["$lat/$lon"] = WeatherData(name, lat, lon, null, null)
+
+    savePreference(c, weathersData)
+}
+
+fun removeLocationPreference(c: Context, weatherData: WeatherData) {
+    val weathersData = getWeathersDataPreference(c)
+
+    weathersData.remove("${weatherData.lat}/${weatherData.lon}")
+
+    savePreference(c, weathersData)
 }
