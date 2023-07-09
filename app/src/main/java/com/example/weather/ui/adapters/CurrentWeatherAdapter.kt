@@ -13,8 +13,8 @@ import com.bumptech.glide.Glide
 import com.example.weather.ICONS_BASE_URL
 import com.example.weather.ICONS_PNG_FORMAT
 import com.example.weather.R
+import com.example.weather.models.WeatherData
 import com.example.weather.ui.activities.FutureWeatherActivity
-import com.example.weather.utils.WeatherData
 import com.example.weather.utils.mapWindSpeedToText
 import com.example.weather.utils.removeLocationPreference
 

@@ -1,20 +1,13 @@
 package com.example.weather.utils
 
 import android.content.Context
-import com.example.weather.network.models.CurrentWeather
-import com.example.weather.network.models.FutureWeather
+import com.example.weather.models.CurrentWeather
+import com.example.weather.models.FutureWeather
+import com.example.weather.models.WeatherData
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 
 const val WEATHER_PREFERENCE_FILE_NAME = "weather_preference"
-
-data class WeatherData(
-    val name: String,
-    val lat: Double,
-    val lon: Double,
-    var currentWeather: CurrentWeather?,
-    var futureWeather: List<FutureWeather>?
-)
 
 private inline fun <reified T> jsonParse(json: String): T =
     Gson().fromJson(json, object : TypeToken<T>() {}.type)
@@ -53,6 +46,9 @@ fun updateWeatherPreference(c: Context, lat: Double, lon: Double, weather: List<
 
 fun getWeathersDataPreference(c: Context): LinkedHashMap<String, WeatherData> =
     getPreferences(c).getString("data", null)?.let { jsonParse(it) } ?: LinkedHashMap()
+
+fun getWeatherDataPreference(c: Context, lat: Double, lon: Double): WeatherData? =
+    getWeathersDataPreference(c)["$lat/$lon"]
 
 fun addLocationPreference(c: Context, name: String, lat: Double, lon: Double) {
     val weathersData = getWeathersDataPreference(c)

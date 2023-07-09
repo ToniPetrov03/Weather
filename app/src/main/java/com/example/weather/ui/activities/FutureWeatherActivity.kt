@@ -7,11 +7,12 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.weather.databinding.WeatherActivityBinding
-import com.example.weather.network.responses.getFutureWeather
+import com.example.weather.network.getFutureWeather
 import com.example.weather.ui.adapters.FutureWeatherAdapter
-import com.example.weather.utils.getWeathersDataPreference
+import com.example.weather.utils.getWeatherDataPreference
 import com.example.weather.utils.hasInternetConnectivity
 import com.example.weather.utils.updateWeatherPreference
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 internal class FutureWeatherActivity : AppCompatActivity() {
@@ -60,26 +61,23 @@ internal class FutureWeatherActivity : AppCompatActivity() {
         getFutureWeather()
     }
 
-    private fun getFutureWeather() {
-        if (hasInternetConnectivity(this)) {
-            lifecycleScope.launch {
-                getFutureWeather(lat, lon).let {
-                    futureWeatherAdapter.updateData(it)
-                    updateWeatherPreference(
-                        this@FutureWeatherActivity,
-                        lat,
-                        lon,
-                        it,
-                    )
-                    binding.weatherSwipeRefresh.isRefreshing = false
-                }
+    private fun getFutureWeather() = with(lifecycleScope) {
+        binding.weatherSwipeRefresh.isRefreshing = true
 
+        launch(Dispatchers.IO) {
+            val newWeather = if (hasInternetConnectivity(this@FutureWeatherActivity)) {
+                getFutureWeather(lat, lon).also {
+                    updateWeatherPreference(this@FutureWeatherActivity, lat, lon, it)
+                }
+            } else {
+                getWeatherDataPreference(this@FutureWeatherActivity, lat, lon)?.futureWeather
+                    ?: emptyList()
             }
-        } else {
-            getWeathersDataPreference(this)["$lat/$lon"]?.futureWeather?.let {
-                futureWeatherAdapter.updateData(it)
+
+            launch(Dispatchers.Main) {
+                futureWeatherAdapter.updateWeather(newWeather)
+                binding.weatherSwipeRefresh.isRefreshing = false
             }
-            binding.weatherSwipeRefresh.isRefreshing = false
         }
     }
 }

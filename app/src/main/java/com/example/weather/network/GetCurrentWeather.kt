@@ -1,11 +1,11 @@
-package com.example.weather.network.responses
+package com.example.weather.network
 
 import com.example.weather.BuildConfig
 import com.example.weather.LANG
 import com.example.weather.UNIT
 import com.example.weather.WEATHER_BASE_URL
-import com.example.weather.network.models.CurrentWeather
-import com.example.weather.network.models.CurrentWeatherResponse
+import com.example.weather.models.CurrentWeather
+import com.example.weather.models.CurrentWeatherResponse
 import com.example.weather.utils.capitalize
 import com.example.weather.utils.formatTime
 import com.google.gson.Gson
@@ -25,8 +25,8 @@ suspend fun getCurrentWeather(lat: Double, lon: Double): CurrentWeather {
     }
 }
 
-private fun mapCurrentWeatherResponse(currentWeather: CurrentWeatherResponse): CurrentWeather {
-    return CurrentWeather(
+private fun mapCurrentWeatherResponse(currentWeather: CurrentWeatherResponse) =
+    CurrentWeather(
         lat = currentWeather.coord.lat,
         lon = currentWeather.coord.lon,
         icon = currentWeather.weather[0].icon,
@@ -37,4 +37,3 @@ private fun mapCurrentWeatherResponse(currentWeather: CurrentWeatherResponse): C
         temperature = currentWeather.main.temp.roundToInt().toString(),
         feelsLike = currentWeather.main.feels_like.roundToInt().toString(),
     )
-}

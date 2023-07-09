@@ -1,4 +1,4 @@
-package com.example.weather.network.models
+package com.example.weather.models
 
 data class FutureWeatherResponse(
     val cod: String,

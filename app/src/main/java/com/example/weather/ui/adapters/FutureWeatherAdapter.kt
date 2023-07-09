@@ -12,7 +12,7 @@ import com.bumptech.glide.Glide
 import com.example.weather.ICONS_BASE_URL
 import com.example.weather.ICONS_PNG_FORMAT
 import com.example.weather.R
-import com.example.weather.network.models.FutureWeather
+import com.example.weather.models.FutureWeather
 import com.example.weather.utils.mapWindSpeedToText
 import java.util.*
 
@@ -68,7 +68,7 @@ internal class FutureWeatherAdapter(
     override fun getItemCount() = weatherList.size
 
     @SuppressLint("NotifyDataSetChanged")
-    fun updateData(newWeather: List<FutureWeather>) {
+    fun updateWeather(newWeather: List<FutureWeather>) {
         weatherList.clear()
         weatherList.addAll(newWeather)
         notifyDataSetChanged()

@@ -9,14 +9,13 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.weather.R
 import com.example.weather.databinding.WeatherActivityBinding
-import com.example.weather.network.responses.getCurrentWeather
+import com.example.weather.network.getCurrentWeather
 import com.example.weather.ui.adapters.CurrentWeatherAdapter
-import com.example.weather.utils.WeatherData
 import com.example.weather.utils.getWeathersDataPreference
 import com.example.weather.utils.hasInternetConnectivity
 import com.example.weather.utils.updateWeatherPreference
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import java.util.concurrent.ConcurrentLinkedQueue
 
 internal class CurrentWeatherActivity : AppCompatActivity() {
 
@@ -37,13 +36,14 @@ internal class CurrentWeatherActivity : AppCompatActivity() {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when (item.itemId) {
+        return when (item.itemId) {
             R.id.add_location -> {
                 addLocationActivityResultLauncher.launch(AddLocationActivity.getIntent(this))
-                return true
+                true
             }
+
+            else -> super.onOptionsItemSelected(item)
         }
-        return super.onOptionsItemSelected(item)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -60,38 +60,24 @@ internal class CurrentWeatherActivity : AppCompatActivity() {
         getCurrentWeather()
     }
 
-    private fun getCurrentWeather() {
-        val weathersData = getWeathersDataPreference(this).values
+    private fun getCurrentWeather() = with(lifecycleScope) {
+        binding.weatherSwipeRefresh.isRefreshing = true
 
-        if (weathersData.isEmpty()) {
-            binding.weatherSwipeRefresh.isRefreshing = false
-            return
-        }
+        launch(Dispatchers.IO) {
+            val weatherPreference = getWeathersDataPreference(this@CurrentWeatherActivity).values
+            val newWeather = weatherPreference.map {
+                if (hasInternetConnectivity(this@CurrentWeatherActivity)) {
+                    val currentWeather = getCurrentWeather(it.lat, it.lon)
+                    updateWeatherPreference(this@CurrentWeatherActivity, it.lat, it.lon, currentWeather)
 
-        if (hasInternetConnectivity(this)) {
-            lifecycleScope.launch {
-                val weatherQueue = ConcurrentLinkedQueue<WeatherData>()
+                    it.copy(currentWeather = currentWeather)
+                } else it
+            }
 
-                for (weatherData in weathersData) {
-                    weatherQueue.add(
-                        getCurrentWeather(weatherData.lat, weatherData.lon).let {
-                            updateWeatherPreference(
-                                this@CurrentWeatherActivity,
-                                weatherData.lat,
-                                weatherData.lon,
-                                it,
-                            )
-                            weatherData.copy(currentWeather = it)
-                        }
-                    )
-                }
-
-                weatherAdapter.updateWeather(weatherQueue.toList())
+            launch(Dispatchers.Main) {
+                weatherAdapter.updateWeather(newWeather)
                 binding.weatherSwipeRefresh.isRefreshing = false
             }
-        } else {
-            weatherAdapter.updateWeather(weathersData.toList())
-            binding.weatherSwipeRefresh.isRefreshing = false
         }
     }
 }

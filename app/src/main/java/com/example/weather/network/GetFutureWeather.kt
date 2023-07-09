@@ -1,11 +1,11 @@
-package com.example.weather.network.responses
+package com.example.weather.network
 
 import com.example.weather.BuildConfig
 import com.example.weather.LANG
 import com.example.weather.UNIT
 import com.example.weather.WEATHER_BASE_URL
-import com.example.weather.network.models.FutureWeather
-import com.example.weather.network.models.FutureWeatherResponse
+import com.example.weather.models.FutureWeather
+import com.example.weather.models.FutureWeatherResponse
 import com.example.weather.utils.capitalize
 import com.example.weather.utils.formatDate
 import com.example.weather.utils.formatTime
