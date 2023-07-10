@@ -24,6 +24,7 @@ suspend fun getCurrentWeather(lat: Double, lon: Double) = withContext(Dispatcher
         )
 
         CurrentWeather(
+            dt = response.dt,
             lat = response.coord.lat,
             lon = response.coord.lon,
             icon = response.weather[0].icon,

@@ -6,6 +6,7 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.weather.R
 import com.example.weather.databinding.WeatherActivityBinding
 import com.example.weather.network.getFutureWeather
 import com.example.weather.ui.adapters.FutureWeatherAdapter
@@ -47,7 +48,7 @@ internal class FutureWeatherActivity : AppCompatActivity() {
 
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
-        title = intent.getStringExtra(LOCATION_NAME)
+        title = getString(R.string.forecast_title, intent.getStringExtra(LOCATION_NAME))
 
         lat = intent.getDoubleExtra(LAT, 0.0)
         lon = intent.getDoubleExtra(LON, 0.0)

@@ -18,13 +18,14 @@ data class CurrentWeatherResponse(
 )
 
 data class CurrentWeather(
-    val icon: String,
-    val description: String,
-    val temperature:String,
-    val feelsLike: String,
-    val windSpeed: Double,
-    val sunrise: String,
-    val sunset: String,
+    val dt: Int,
     val lat: Double,
     val lon: Double,
+    val icon: String,
+    val sunset: String,
+    val sunrise: String,
+    val windSpeed: Double,
+    val feelsLike: String,
+    val temperature:String,
+    val description: String,
 )

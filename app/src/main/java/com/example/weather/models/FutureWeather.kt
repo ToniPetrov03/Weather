@@ -8,7 +8,7 @@ data class FutureWeatherResponse(
 )
 
 data class WeatherItem(
-    val dt: Long,
+    val dt: Int,
     val main: Main,
     val weather: List<Weather>,
     val clouds: Clouds,

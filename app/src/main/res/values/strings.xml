@@ -1,7 +1,9 @@
 <resources>
     <string name="weather">Времето</string>
+    <string name="forecast_title">5 дневна прогноза за %s</string>
     <string name="temperature">%s°C</string>
-    <string name="feels_like">усеща се: %s°C</string>
+    <string name="feels_like">Усеща се: %s°C</string>
+    <string name="updated_at">Обновено в %s</string>
     <string name="sunrise_sunset">Изгрев / Залез: %s / %s</string>
     <string name="chance_of_rain">Вероятност за валежи: %s%%</string>
     <string name="calm">Безветрие</string>
@@ -14,7 +16,7 @@
     <string name="whole_gale">Много силна буря</string>
     <string name="storm">Ураган</string>
     <string name="violent_storm">Ураган със сила на унищожение</string>
-    <string name="wind_speed">%s - %d м/с</string>
+    <string name="wind_speed">%s: %d м/с</string>
     <string name="wind">Вятър</string>
     <string name="add">Добави</string>
     <string name="add_location">Добави локация</string>

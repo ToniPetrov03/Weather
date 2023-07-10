@@ -15,6 +15,7 @@ import com.example.weather.ICONS_PNG_FORMAT
 import com.example.weather.R
 import com.example.weather.models.WeatherData
 import com.example.weather.ui.activities.FutureWeatherActivity
+import com.example.weather.utils.formatDateTime
 import com.example.weather.utils.mapWindSpeedToText
 import com.example.weather.utils.removeLocationPreference
 
@@ -39,6 +40,7 @@ internal class CurrentWeatherAdapter(
         val weatherDescription: TextView = itemView.findViewById(R.id.weather_description)
         val temperature: TextView = itemView.findViewById(R.id.temperature_text)
         val feelsLike: TextView = itemView.findViewById(R.id.feels_like_text)
+        val updatedAt: TextView = itemView.findViewById(R.id.update_at)
         val wind: TextView = itemView.findViewById(R.id.wind_text)
         val chanceOfRain: TextView = itemView.findViewById(R.id.chance_of_rain_text)
         val sunriseSunset: TextView = itemView.findViewById(R.id.sunrise_sunset_text)
@@ -58,6 +60,8 @@ internal class CurrentWeatherAdapter(
         holder.weatherDescription.text = weather?.description
         holder.temperature.text = context.getString(R.string.temperature, weather?.temperature)
         holder.feelsLike.text = context.getString(R.string.feels_like, weather?.feelsLike)
+        holder.updatedAt.text =
+            context.getString(R.string.updated_at, weather?.dt?.let { formatDateTime(it) })
         holder.wind.text = mapWindSpeedToText(context, weather?.windSpeed)
         holder.sunriseSunset.text =
             context.getString(R.string.sunrise_sunset, weather?.sunrise, weather?.sunset)
@@ -71,7 +75,7 @@ internal class CurrentWeatherAdapter(
                     context.getString(R.string.removing_location_description, weatherData.name)
                 )
                 .setPositiveButton(context.getString(R.string.continue_action)) { _, _ ->
-                    removeLocation(position, weatherData)
+                    removeLocation(weatherData)
                 }
                 .setNegativeButton(context.getString(R.string.cancel_action), null)
                 .create()
@@ -99,9 +103,10 @@ internal class CurrentWeatherAdapter(
         notifyDataSetChanged()
     }
 
-    private fun removeLocation(position: Int, weatherData: WeatherData) {
+    @SuppressLint("NotifyDataSetChanged")
+    private fun removeLocation(weatherData: WeatherData) {
         removeLocationPreference(context, weatherData)
         weatherList.remove(weatherData)
-        notifyItemRemoved(position)
+        notifyDataSetChanged()
     }
 }

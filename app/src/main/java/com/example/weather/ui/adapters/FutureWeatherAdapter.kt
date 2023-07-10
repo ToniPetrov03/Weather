@@ -36,6 +36,7 @@ internal class FutureWeatherAdapter(
         val weatherDescription: TextView = itemView.findViewById(R.id.weather_description)
         val temperature: TextView = itemView.findViewById(R.id.temperature_text)
         val feelsLike: TextView = itemView.findViewById(R.id.feels_like_text)
+        val updatedAt: TextView = itemView.findViewById(R.id.update_at)
         val wind: TextView = itemView.findViewById(R.id.wind_text)
         val chanceOfRain: TextView = itemView.findViewById(R.id.chance_of_rain_text)
         val sunriseSunset: TextView = itemView.findViewById(R.id.sunrise_sunset_text)
@@ -62,6 +63,7 @@ internal class FutureWeatherAdapter(
         holder.feelsLike.text = context.getString(R.string.feels_like, weather.feelsLike)
         holder.wind.text = mapWindSpeedToText(context, weather.windSpeed)
         holder.chanceOfRain.text = context.getString(R.string.chance_of_rain, weather.chanceOfRain)
+        holder.updatedAt.visibility = View.GONE
         holder.sunriseSunset.visibility = View.GONE
     }
 
