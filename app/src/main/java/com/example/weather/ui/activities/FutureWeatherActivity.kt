@@ -9,8 +9,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.weather.databinding.WeatherActivityBinding
 import com.example.weather.network.getFutureWeather
 import com.example.weather.ui.adapters.FutureWeatherAdapter
-import com.example.weather.utils.getWeatherDataPreference
-import com.example.weather.utils.hasInternetConnectivity
+import com.example.weather.utils.getFutureWeatherPreference
 import com.example.weather.utils.updateWeatherPreference
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -62,22 +61,17 @@ internal class FutureWeatherActivity : AppCompatActivity() {
     }
 
     private fun getFutureWeather() = with(lifecycleScope) {
-        binding.weatherSwipeRefresh.isRefreshing = true
+        val weatherPreference = getFutureWeatherPreference(this@FutureWeatherActivity, lat, lon)
+        futureWeatherAdapter.updateWeather(weatherPreference)
 
         launch(Dispatchers.IO) {
-            val newWeather = if (hasInternetConnectivity(this@FutureWeatherActivity)) {
-                getFutureWeather(lat, lon).also {
+            getFutureWeather(lat, lon)?.also {
+                launch(Dispatchers.Main) {
+                    futureWeatherAdapter.updateWeather(it)
                     updateWeatherPreference(this@FutureWeatherActivity, lat, lon, it)
                 }
-            } else {
-                getWeatherDataPreference(this@FutureWeatherActivity, lat, lon)?.futureWeather
-                    ?: emptyList()
             }
-
-            launch(Dispatchers.Main) {
-                futureWeatherAdapter.updateWeather(newWeather)
-                binding.weatherSwipeRefresh.isRefreshing = false
-            }
+            binding.weatherSwipeRefresh.isRefreshing = false
         }
     }
 }

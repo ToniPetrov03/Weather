@@ -12,7 +12,6 @@ import com.example.weather.databinding.WeatherActivityBinding
 import com.example.weather.network.getCurrentWeather
 import com.example.weather.ui.adapters.CurrentWeatherAdapter
 import com.example.weather.utils.getWeathersDataPreference
-import com.example.weather.utils.hasInternetConnectivity
 import com.example.weather.utils.updateWeatherPreference
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -61,17 +60,21 @@ internal class CurrentWeatherActivity : AppCompatActivity() {
     }
 
     private fun getCurrentWeather() = with(lifecycleScope) {
-        binding.weatherSwipeRefresh.isRefreshing = true
+        val weatherPreference = getWeathersDataPreference(this@CurrentWeatherActivity).values
+        weatherAdapter.updateWeather(weatherPreference.toList())
 
         launch(Dispatchers.IO) {
-            val weatherPreference = getWeathersDataPreference(this@CurrentWeatherActivity).values
             val newWeather = weatherPreference.map {
-                if (hasInternetConnectivity(this@CurrentWeatherActivity)) {
-                    val currentWeather = getCurrentWeather(it.lat, it.lon)
-                    updateWeatherPreference(this@CurrentWeatherActivity, it.lat, it.lon, currentWeather)
+                getCurrentWeather(it.lat, it.lon)?.let { weather ->
+                    updateWeatherPreference(
+                        this@CurrentWeatherActivity,
+                        it.lat,
+                        it.lon,
+                        weather
+                    )
 
-                    it.copy(currentWeather = currentWeather)
-                } else it
+                    it.copy(currentWeather = weather)
+                } ?: it
             }
 
             launch(Dispatchers.Main) {

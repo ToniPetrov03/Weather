@@ -47,8 +47,8 @@ fun updateWeatherPreference(c: Context, lat: Double, lon: Double, weather: List<
 fun getWeathersDataPreference(c: Context): LinkedHashMap<String, WeatherData> =
     getPreferences(c).getString("data", null)?.let { jsonParse(it) } ?: LinkedHashMap()
 
-fun getWeatherDataPreference(c: Context, lat: Double, lon: Double): WeatherData? =
-    getWeathersDataPreference(c)["$lat/$lon"]
+fun getFutureWeatherPreference(c: Context, lat: Double, lon: Double) =
+    getWeathersDataPreference(c)["$lat/$lon"]?.futureWeather ?: emptyList()
 
 fun addLocationPreference(c: Context, name: String, lat: Double, lon: Double) {
     val weathersData = getWeathersDataPreference(c)
