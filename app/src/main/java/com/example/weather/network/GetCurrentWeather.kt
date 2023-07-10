@@ -8,32 +8,27 @@ import com.example.weather.models.CurrentWeather
 import com.example.weather.models.CurrentWeatherResponse
 import com.example.weather.utils.capitalize
 import com.example.weather.utils.formatTime
-import com.google.gson.Gson
+import com.example.weather.utils.jsonParse
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.net.URL
 import kotlin.math.roundToInt
 
-suspend fun getCurrentWeather(lat: Double, lon: Double): CurrentWeather {
-    return withContext(Dispatchers.IO) {
-        val response = withContext(Dispatchers.IO) {
-            URL("$WEATHER_BASE_URL/weather?lat=$lat&lon=$lon&units=$UNIT&lang=$LANG&appid=${BuildConfig.WEATHER_API_KEY}")
-                .readText()
-        }
-
-        mapCurrentWeatherResponse(Gson().fromJson(response, CurrentWeatherResponse::class.java))
-    }
-}
-
-private fun mapCurrentWeatherResponse(currentWeather: CurrentWeatherResponse) =
-    CurrentWeather(
-        lat = currentWeather.coord.lat,
-        lon = currentWeather.coord.lon,
-        icon = currentWeather.weather[0].icon,
-        windSpeed = currentWeather.wind.speed,
-        sunset = formatTime(currentWeather.sys.sunset),
-        sunrise = formatTime(currentWeather.sys.sunrise),
-        description = capitalize(currentWeather.weather[0].description),
-        temperature = currentWeather.main.temp.roundToInt().toString(),
-        feelsLike = currentWeather.main.feels_like.roundToInt().toString(),
+suspend fun getCurrentWeather(lat: Double, lon: Double) = withContext(Dispatchers.IO) {
+    val response: CurrentWeatherResponse = jsonParse(
+        URL("$WEATHER_BASE_URL/weather?lat=$lat&lon=$lon&units=$UNIT&lang=$LANG&appid=${BuildConfig.WEATHER_API_KEY}")
+            .readText()
     )
+
+    CurrentWeather(
+        lat = response.coord.lat,
+        lon = response.coord.lon,
+        icon = response.weather[0].icon,
+        windSpeed = response.wind.speed,
+        sunset = formatTime(response.sys.sunset),
+        sunrise = formatTime(response.sys.sunrise),
+        description = capitalize(response.weather[0].description),
+        temperature = response.main.temp.roundToInt().toString(),
+        feelsLike = response.main.feels_like.roundToInt().toString(),
+    )
+}

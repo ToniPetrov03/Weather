@@ -9,7 +9,7 @@ import com.google.gson.reflect.TypeToken
 
 const val WEATHER_PREFERENCE_FILE_NAME = "weather_preference"
 
-private inline fun <reified T> jsonParse(json: String): T =
+inline fun <reified T> jsonParse(json: String): T =
     Gson().fromJson(json, object : TypeToken<T>() {}.type)
 
 private fun getPreferences(c: Context) =
