@@ -59,11 +59,11 @@ internal class CurrentWeatherActivity : AppCompatActivity() {
         getCurrentWeather()
     }
 
-    private fun getCurrentWeather() = with(lifecycleScope) {
-        val weatherPreference = getWeathersDataPreference(this@CurrentWeatherActivity).values
+    private fun getCurrentWeather() {
+        val weatherPreference = getWeathersDataPreference(this).values
         weatherAdapter.updateWeather(weatherPreference.toList())
 
-        launch(Dispatchers.IO) {
+        lifecycleScope.launch(Dispatchers.IO) {
             val newWeather = weatherPreference.map {
                 getCurrentWeather(it.lat, it.lon)?.let { weather ->
                     updateWeatherPreference(

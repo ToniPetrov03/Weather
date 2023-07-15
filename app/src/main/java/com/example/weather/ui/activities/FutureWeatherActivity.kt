@@ -29,9 +29,10 @@ internal class FutureWeatherActivity : AppCompatActivity() {
             }
     }
 
+    private val futureWeatherAdapter = FutureWeatherAdapter(mutableListOf(), this)
+
     private lateinit var binding: WeatherActivityBinding
 
-    private var futureWeatherAdapter = FutureWeatherAdapter(mutableListOf(), this)
     private var lat: Double = 0.0
     private var lon: Double = 0.0
 
@@ -61,11 +62,11 @@ internal class FutureWeatherActivity : AppCompatActivity() {
         getFutureWeather()
     }
 
-    private fun getFutureWeather() = with(lifecycleScope) {
+    private fun getFutureWeather() {
         val weatherPreference = getFutureWeatherPreference(this@FutureWeatherActivity, lat, lon)
         futureWeatherAdapter.updateWeather(weatherPreference)
 
-        launch(Dispatchers.IO) {
+        lifecycleScope.launch(Dispatchers.IO) {
             getFutureWeather(lat, lon)?.also {
                 launch(Dispatchers.Main) {
                     futureWeatherAdapter.updateWeather(it)
