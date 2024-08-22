@@ -1,4 +1,4 @@
-package com.example.weather.ui.adapters
+package com.example.weather.current_weather
 
 import android.annotation.SuppressLint
 import android.app.AlertDialog
@@ -10,14 +10,14 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.example.weather.ICONS_BASE_URL
-import com.example.weather.ICONS_PNG_FORMAT
 import com.example.weather.R
+import com.example.weather.utils.ICONS_BASE_URL
+import com.example.weather.utils.ICONS_PNG_FORMAT
 import com.example.weather.models.WeatherData
-import com.example.weather.ui.activities.FutureWeatherActivity
+import com.example.weather.future_weather.FutureWeatherActivity
 import com.example.weather.utils.formatDateTime
 import com.example.weather.utils.mapWindSpeedToText
-import com.example.weather.utils.removeLocationPreference
+import com.example.weather.utils.removeWeathersDataPreference
 
 internal class CurrentWeatherAdapter(
     private val context: Context,
@@ -84,12 +84,7 @@ internal class CurrentWeatherAdapter(
 
         holder.itemView.setOnClickListener {
             context.startActivity(
-                FutureWeatherActivity.getIntent(
-                    context,
-                    weatherData.name,
-                    weatherData.lat,
-                    weatherData.lon,
-                )
+                FutureWeatherActivity.getIntent(context, weatherData.lat, weatherData.lon)
             )
         }
     }
@@ -105,7 +100,7 @@ internal class CurrentWeatherAdapter(
 
     @SuppressLint("NotifyDataSetChanged")
     private fun removeLocation(weatherData: WeatherData) {
-        removeLocationPreference(context, weatherData)
+        removeWeathersDataPreference(context, weatherData)
         weatherList.remove(weatherData)
         notifyDataSetChanged()
     }

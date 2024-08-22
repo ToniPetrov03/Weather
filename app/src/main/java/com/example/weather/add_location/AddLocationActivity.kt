@@ -1,4 +1,4 @@
-package com.example.weather.ui.activities
+package com.example.weather.add_location
 
 import android.annotation.SuppressLint
 import android.app.AlertDialog
@@ -8,13 +8,10 @@ import android.os.Bundle
 import android.view.MotionEvent
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.widget.doAfterTextChanged
-import com.example.weather.DEFAULT_LAT_LOCATION_BG
-import com.example.weather.DEFAULT_LON_LOCATION_BG
-import com.example.weather.DEFAULT_ZOOM
 import com.example.weather.R
 import com.example.weather.databinding.AddLocationActivityBinding
 import com.example.weather.utils.LocationCallback
-import com.example.weather.utils.addLocationPreference
+import com.example.weather.utils.updateWeatherDataPreference
 import com.example.weather.utils.getCurrentLocation
 import com.example.weather.utils.getWeathersDataPreference
 import com.example.weather.utils.requestLocationPermission
@@ -30,6 +27,10 @@ class AddLocationActivity : AppCompatActivity(), LocationCallback {
     companion object {
         fun getIntent(context: Context) = Intent(context, AddLocationActivity::class.java)
     }
+
+    private val defaultLan = 42.7
+    private val defaultLon = 23.3
+    private val defaultZoom = 15.0
 
     private lateinit var binding: AddLocationActivityBinding
     private lateinit var selectedLocation: GeoPoint
@@ -52,8 +53,8 @@ class AddLocationActivity : AppCompatActivity(), LocationCallback {
         val lastLocation = getWeathersDataPreference(this).values.lastOrNull()
 
         selectedLocation = GeoPoint(
-            lastLocation?.lat ?: DEFAULT_LAT_LOCATION_BG,
-            lastLocation?.lon ?: DEFAULT_LON_LOCATION_BG
+            lastLocation?.lat ?: defaultLan,
+            lastLocation?.lon ?: defaultLon
         )
 
         setupViews()
@@ -85,7 +86,7 @@ class AddLocationActivity : AppCompatActivity(), LocationCallback {
     private fun setupViews() = with(binding) {
         map.setMultiTouchControls(true)
         map.controller.setCenter(selectedLocation)
-        map.controller.setZoom(DEFAULT_ZOOM)
+        map.controller.setZoom(defaultZoom)
 
         updateMarker(map)
 
@@ -107,11 +108,11 @@ class AddLocationActivity : AppCompatActivity(), LocationCallback {
         locationName.doAfterTextChanged { addButton.isEnabled = !it.isNullOrEmpty() }
 
         addButton.setOnClickListener {
-            addLocationPreference(
-                this@AddLocationActivity,
-                locationName.text.toString(),
-                selectedLocation.latitude,
-                selectedLocation.longitude,
+            updateWeatherDataPreference(
+                context = this@AddLocationActivity,
+                lat = selectedLocation.latitude,
+                lon = selectedLocation.longitude,
+                locationName = locationName.text.toString(),
             )
             setResult(RESULT_OK)
             finish()

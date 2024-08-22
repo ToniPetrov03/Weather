@@ -1,4 +1,11 @@
-package com.example.weather.models
+package com.example.weather.future_weather
+
+import com.example.weather.models.Clouds
+import com.example.weather.models.Main
+import com.example.weather.models.Rain
+import com.example.weather.models.Sys
+import com.example.weather.models.Weather
+import com.example.weather.models.Wind
 
 data class FutureWeatherResponse(
     val cod: String,

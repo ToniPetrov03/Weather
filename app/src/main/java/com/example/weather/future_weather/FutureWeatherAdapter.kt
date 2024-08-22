@@ -1,4 +1,4 @@
-package com.example.weather.ui.adapters
+package com.example.weather.future_weather
 
 import android.annotation.SuppressLint
 import android.content.Context
@@ -9,12 +9,10 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.example.weather.ICONS_BASE_URL
-import com.example.weather.ICONS_PNG_FORMAT
+import com.example.weather.utils.ICONS_BASE_URL
+import com.example.weather.utils.ICONS_PNG_FORMAT
 import com.example.weather.R
-import com.example.weather.models.FutureWeather
 import com.example.weather.utils.mapWindSpeedToText
-import java.util.*
 
 internal class FutureWeatherAdapter(
     private var weatherList: MutableList<FutureWeather>,

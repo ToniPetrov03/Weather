@@ -1,4 +1,4 @@
-package com.example.weather.ui.activities
+package com.example.weather.future_weather
 
 import android.content.Context
 import android.content.Intent
@@ -8,22 +8,18 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.weather.R
 import com.example.weather.databinding.WeatherActivityBinding
-import com.example.weather.network.getFutureWeather
-import com.example.weather.ui.adapters.FutureWeatherAdapter
 import com.example.weather.utils.getFutureWeatherPreference
-import com.example.weather.utils.updateWeatherPreference
+import com.example.weather.utils.updateWeatherDataPreference
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 internal class FutureWeatherActivity : AppCompatActivity() {
     companion object {
-        private const val LOCATION_NAME = "location_name"
         private const val LAT = "lat"
         private const val LON = "lon"
 
-        fun getIntent(context: Context, locationName: String, lat: Double, lon: Double) =
+        fun getIntent(context: Context, lat: Double, lon: Double) =
             Intent(context, FutureWeatherActivity::class.java).apply {
-                putExtra(LOCATION_NAME, locationName)
                 putExtra(LAT, lat)
                 putExtra(LON, lon)
             }
@@ -49,7 +45,7 @@ internal class FutureWeatherActivity : AppCompatActivity() {
 
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
-        title = getString(R.string.forecast_title, intent.getStringExtra(LOCATION_NAME))
+        title = getString(R.string.forecast_title)
 
         lat = intent.getDoubleExtra(LAT, 0.0)
         lon = intent.getDoubleExtra(LON, 0.0)
@@ -57,23 +53,31 @@ internal class FutureWeatherActivity : AppCompatActivity() {
         binding.weatherCards.layoutManager = LinearLayoutManager(this)
         binding.weatherCards.adapter = futureWeatherAdapter
 
+        binding.weatherSwipeRefresh.isRefreshing = true
         binding.weatherSwipeRefresh.setOnRefreshListener { getFutureWeather() }
+
+        futureWeatherAdapter.updateWeather(
+            getFutureWeatherPreference(this@FutureWeatherActivity, lat, lon)
+        )
 
         getFutureWeather()
     }
 
     private fun getFutureWeather() {
-        val weatherPreference = getFutureWeatherPreference(this@FutureWeatherActivity, lat, lon)
-        futureWeatherAdapter.updateWeather(weatherPreference)
-
         lifecycleScope.launch(Dispatchers.IO) {
-            getFutureWeather(lat, lon)?.also {
-                launch(Dispatchers.Main) {
-                    futureWeatherAdapter.updateWeather(it)
-                    updateWeatherPreference(this@FutureWeatherActivity, lat, lon, it)
-                }
+            val futureWeather = getFutureWeather(lat, lon).also {
+                binding.weatherSwipeRefresh.isRefreshing = false
+            } ?: return@launch
+
+            launch(Dispatchers.Main) {
+                futureWeatherAdapter.updateWeather(futureWeather)
+                updateWeatherDataPreference(
+                    context = this@FutureWeatherActivity,
+                    lat = lat,
+                    lon = lon,
+                    newFutureWeather = futureWeather,
+                )
             }
-            binding.weatherSwipeRefresh.isRefreshing = false
         }
     }
 }

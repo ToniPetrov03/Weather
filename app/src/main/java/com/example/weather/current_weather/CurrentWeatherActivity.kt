@@ -1,4 +1,4 @@
-package com.example.weather.ui.activities
+package com.example.weather.current_weather
 
 import android.os.Bundle
 import android.view.Menu
@@ -9,10 +9,9 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.weather.R
 import com.example.weather.databinding.WeatherActivityBinding
-import com.example.weather.network.getCurrentWeather
-import com.example.weather.ui.adapters.CurrentWeatherAdapter
+import com.example.weather.add_location.AddLocationActivity
 import com.example.weather.utils.getWeathersDataPreference
-import com.example.weather.utils.updateWeatherPreference
+import com.example.weather.utils.updateWeatherDataPreference
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
@@ -54,23 +53,24 @@ internal class CurrentWeatherActivity : AppCompatActivity() {
         binding.weatherCards.layoutManager = LinearLayoutManager(this)
         binding.weatherCards.adapter = weatherAdapter
 
+        binding.weatherSwipeRefresh.isRefreshing = true
         binding.weatherSwipeRefresh.setOnRefreshListener { getCurrentWeather() }
 
         getCurrentWeather()
     }
 
     private fun getCurrentWeather() {
-        val weatherPreference = getWeathersDataPreference(this).values
-        weatherAdapter.updateWeather(weatherPreference.toList())
+        val weatherPreference = getWeathersDataPreference(this).values.toList()
+        weatherAdapter.updateWeather(weatherPreference)
 
         lifecycleScope.launch(Dispatchers.IO) {
             val newWeather = weatherPreference.map {
                 getCurrentWeather(it.lat, it.lon)?.let { weather ->
-                    updateWeatherPreference(
-                        this@CurrentWeatherActivity,
-                        it.lat,
-                        it.lon,
-                        weather
+                    updateWeatherDataPreference(
+                        context = this@CurrentWeatherActivity,
+                        lat = it.lat,
+                        lon = it.lon,
+                        newCurrentWeather = weather
                     )
 
                     it.copy(currentWeather = weather)

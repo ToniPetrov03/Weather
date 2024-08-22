@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.INTERNET" />
@@ -8,15 +7,12 @@
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 
     <application
-        android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
         android:label="@string/weather"
-        android:supportsRtl="true"
-        android:theme="@style/Theme.Weather"
-        tools:targetApi="31">
+        android:theme="@style/Theme.Weather">
 
         <activity
-            android:name=".ui.activities.CurrentWeatherActivity"
+            android:name="com.example.weather.current_weather.CurrentWeatherActivity"
             android:exported="true"
             android:screenOrientation="locked">
             <intent-filter>
@@ -27,11 +23,11 @@
         </activity>
 
         <activity
-            android:name=".ui.activities.FutureWeatherActivity"
+            android:name="com.example.weather.future_weather.FutureWeatherActivity"
             android:screenOrientation="locked" />
 
         <activity
-            android:name=".ui.activities.AddLocationActivity"
+            android:name="com.example.weather.add_location.AddLocationActivity"
             android:label="@string/adding_location"
             android:screenOrientation="locked" />
 

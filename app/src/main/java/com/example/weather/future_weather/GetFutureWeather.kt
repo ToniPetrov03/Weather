@@ -1,12 +1,10 @@
-package com.example.weather.network
+package com.example.weather.future_weather
 
 import android.util.Log
 import com.example.weather.BuildConfig
-import com.example.weather.LANG
-import com.example.weather.UNIT
-import com.example.weather.WEATHER_BASE_URL
-import com.example.weather.models.FutureWeather
-import com.example.weather.models.FutureWeatherResponse
+import com.example.weather.utils.LANG
+import com.example.weather.utils.UNIT
+import com.example.weather.utils.WEATHER_BASE_URL
 import com.example.weather.utils.capitalize
 import com.example.weather.utils.formatDate
 import com.example.weather.utils.formatTime

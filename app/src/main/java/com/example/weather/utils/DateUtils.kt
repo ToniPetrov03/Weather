@@ -1,10 +1,10 @@
 package com.example.weather.utils
 
-import com.example.weather.LANG
-import com.example.weather.MILLISECONDS_PER_SECOND
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+
+private const val MILLISECONDS_PER_SECOND = 1000L
 
 fun formatDate(timestamp: Int): String {
     val sdf = SimpleDateFormat("EEEE, d MMMM", Locale(LANG))

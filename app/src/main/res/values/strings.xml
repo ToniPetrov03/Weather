@@ -1,6 +1,7 @@
 <resources>
     <string name="weather">Времето</string>
-    <string name="forecast_title">5-дневна прогноза %s</string>
+    <string name="weather_icon">Икона на времето</string>
+    <string name="forecast_title">5-дневна прогноза</string>
     <string name="temperature">%s°C</string>
     <string name="feels_like">Усеща се: %s°C</string>
     <string name="updated_at">Обновено в %s</string>
@@ -20,6 +21,7 @@
     <string name="wind">Вятър</string>
     <string name="add">Добави</string>
     <string name="add_location">Добави локация</string>
+    <string name="current_location">Текуща локация</string>
     <string name="adding_location">Добавяне на локация</string>
     <string name="name_of_location">Име на локацията</string>
     <string name="removing_location_title">Премахване на локацията</string>
