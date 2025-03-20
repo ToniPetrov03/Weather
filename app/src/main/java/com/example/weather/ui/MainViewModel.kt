@@ -11,7 +11,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
-internal class MainActivityViewModel : ViewModel() {
+internal class MainViewModel : ViewModel() {
 
     lateinit var weather: CurrentWeather
 

@@ -52,7 +52,7 @@ fun getCurrentLocation(context: Context, callback: LocationCallback) {
     val locationManager =
         context.getSystemService(AppCompatActivity.LOCATION_SERVICE) as LocationManager
 
-    val locationListener: LocationListener = object : LocationListener {
+    val locationListener = object : LocationListener {
         override fun onLocationChanged(location: Location) {
             callback.onLocationReceived(GeoPoint(location.latitude, location.longitude))
             locationManager.removeUpdates(this)

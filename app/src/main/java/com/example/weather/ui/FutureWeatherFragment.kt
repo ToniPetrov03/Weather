@@ -13,7 +13,7 @@ import kotlinx.coroutines.launch
 
 internal class FutureWeatherFragment : Fragment(R.layout.fragment_weather) {
 
-    private val viewModel: MainActivityViewModel by activityViewModels()
+    private val viewModel: MainViewModel by activityViewModels()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

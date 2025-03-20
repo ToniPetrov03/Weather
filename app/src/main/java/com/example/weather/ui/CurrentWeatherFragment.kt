@@ -20,7 +20,7 @@ import kotlinx.coroutines.launch
 
 internal class CurrentWeatherFragment : Fragment(R.layout.fragment_weather) {
 
-    private val viewModel: MainActivityViewModel by activityViewModels()
+    private val viewModel: MainViewModel by activityViewModels()
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)
@@ -39,6 +39,8 @@ internal class CurrentWeatherFragment : Fragment(R.layout.fragment_weather) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        requireActivity().title = getString(R.string.weather)
 
         setHasOptionsMenu(true)
 

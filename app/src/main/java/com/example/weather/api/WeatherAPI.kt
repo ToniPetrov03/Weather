@@ -30,10 +30,10 @@ internal class WeatherAPI {
 
             CurrentWeather(
                 name = name,
+                lat = lat,
+                lon = lon,
                 id = response.id,
                 dt = response.dt,
-                lat = response.coord.lat,
-                lon = response.coord.lon,
                 icon = response.weather[0].icon,
                 windSpeed = response.wind.speed,
                 sunset = formatTime(response.sys.sunset),

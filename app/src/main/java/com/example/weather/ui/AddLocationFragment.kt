@@ -37,6 +37,8 @@ class AddLocationFragment : Fragment(R.layout.fragment_add_location), LocationCa
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        requireActivity().title = getString(R.string.adding_location)
+
         _binding = FragmentAddLocationBinding.bind(view)
 
         Configuration.getInstance().userAgentValue = BuildConfig.APPLICATION_ID
