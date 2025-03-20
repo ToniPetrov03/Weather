@@ -3,11 +3,10 @@ package com.example.weather.utils
 import android.content.Context
 import com.example.weather.R
 
-fun mapWindSpeedToText(context: Context, speed: Double?): String {
-    val roundedSpeed = speed?.toInt()
+fun mapWindSpeedToText(context: Context, speed: Double): String {
+    val roundedSpeed = speed.toInt()
 
     val windDescription = when {
-        roundedSpeed == null -> context.getString(R.string.wind)
         roundedSpeed < 1 -> context.getString(R.string.calm)
         roundedSpeed < 2 -> context.getString(R.string.light_air)
         roundedSpeed < 4 -> context.getString(R.string.light_breeze)

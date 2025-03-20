@@ -21,19 +21,16 @@
     <string name="wind">Вятър</string>
     <string name="add">Добави</string>
     <string name="add_location">Добави локация</string>
+    <string name="no_location">Няма те избрана локация.</string>
     <string name="current_location">Текуща локация</string>
     <string name="adding_location">Добавяне на локация</string>
     <string name="name_of_location">Име на локацията</string>
     <string name="removing_location_title">Премахване на локацията</string>
     <string name="removing_location_description">Сигурен ли си, че искаш да премахнеш локацията \"%s\"?</string>
-    <string name="no_internet_connection_title">Няма интернет връзка</string>
-    <string name="no_internet_connection_description">Моля, проверете вашата интернет връзка и опитайте отново.</string>
     <string name="gps_not_activated_title">GPS не е активиран</string>
     <string name="gps_not_activated_description">Моля, активирайте GPS, за да продължите.</string>
     <string name="continue_action">Продължи</string>
     <string name="cancel_action">Откажи</string>
-    <string name="reload">Презареди</string>
     <string name="activate">Активирай</string>
-    <string name="online">Онлайн</string>
-    <string name="offline">Офлайн</string>
+    <string name="error_title">Възникна грешка. Опитайте отново.</string>
 </resources>

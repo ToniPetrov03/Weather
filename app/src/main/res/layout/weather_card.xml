@@ -4,9 +4,8 @@
     android:layout_height="wrap_content"
     android:orientation="vertical">
 
-    <!-- Date -->
     <TextView
-        android:id="@+id/date_text"
+        android:id="@+id/date"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
@@ -28,7 +27,6 @@
             android:layout_height="match_parent"
             android:padding="16dp">
 
-            <!-- Icon in top left corner -->
             <ImageView
                 android:id="@+id/weather_icon"
                 android:layout_width="48dp"
@@ -38,9 +36,8 @@
                 android:background="@color/sky_blue"
                 android:contentDescription="@string/weather_icon" />
 
-            <!-- Location name or Hour -->
             <TextView
-                android:id="@+id/title_text"
+                android:id="@+id/name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignBaseline="@id/weather_icon"
@@ -50,30 +47,28 @@
                 android:textSize="18sp"
                 android:textStyle="bold" />
 
-            <!-- Description of weather -->
             <TextView
-                android:id="@+id/weather_description"
+                android:id="@+id/description"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/title_text"
+                android:layout_below="@id/name"
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="4dp"
                 android:layout_toEndOf="@id/weather_icon"
                 android:textSize="16sp" />
 
-            <!-- Updated at -->
             <TextView
                 android:id="@+id/update_at"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/weather_description"
+                android:layout_below="@id/description"
                 android:layout_alignParentStart="true"
                 android:layout_marginTop="8dp"
-                android:textSize="16sp" />
+                android:textSize="16sp"
+                android:visibility="gone"/>
 
-            <!-- Wind -->
             <TextView
-                android:id="@+id/wind_text"
+                android:id="@+id/wind"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/update_at"
@@ -81,29 +76,28 @@
                 android:layout_marginTop="8dp"
                 android:textSize="16sp" />
 
-            <!-- Probability of rain -->
             <TextView
-                android:id="@+id/chance_of_rain_text"
+                android:id="@+id/chance_of_rain"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/wind_text"
+                android:layout_below="@id/wind"
                 android:layout_alignParentStart="true"
                 android:layout_marginTop="8dp"
-                android:textSize="16sp" />
+                android:textSize="16sp"
+                android:visibility="gone"/>
 
-            <!-- Sunrise / Sunset -->
             <TextView
-                android:id="@+id/sunrise_sunset_text"
+                android:id="@+id/sunrise_sunset"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/chance_of_rain_text"
+                android:layout_below="@id/chance_of_rain"
                 android:layout_alignParentStart="true"
                 android:layout_marginTop="8dp"
-                android:textSize="16sp" />
+                android:textSize="16sp"
+                android:visibility="gone"/>
 
-            <!-- Temperature -->
             <TextView
-                android:id="@+id/temperature_text"
+                android:id="@+id/temperature"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentTop="true"
@@ -111,12 +105,11 @@
                 android:textSize="18sp"
                 android:textStyle="bold" />
 
-            <!-- Feels like temperature -->
             <TextView
-                android:id="@+id/feels_like_text"
+                android:id="@+id/feels_like"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/temperature_text"
+                android:layout_below="@id/temperature"
                 android:layout_alignParentEnd="true"
                 android:textSize="10sp" />
 
