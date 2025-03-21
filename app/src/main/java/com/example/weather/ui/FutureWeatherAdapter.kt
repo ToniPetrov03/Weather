@@ -10,8 +10,7 @@ import com.bumptech.glide.Glide
 import com.example.weather.R
 import com.example.weather.models.FutureWeather
 import com.example.weather.databinding.WeatherCardBinding
-import com.example.weather.utils.ICONS_BASE_URL
-import com.example.weather.utils.ICONS_PNG_FORMAT
+import com.example.weather.api.WeatherAPI
 import com.example.weather.utils.mapWindSpeedToText
 
 internal class FutureWeatherAdapter : ListAdapter<FutureWeather, FutureWeatherViewHolder>(FutureWeatherDiffCallback()) {
@@ -32,10 +31,7 @@ internal class FutureWeatherViewHolder(
     fun bind(weather: FutureWeather) = with(binding) {
         val context = root.context
 
-        Glide.with(context)
-            .load("$ICONS_BASE_URL${weather.icon}$ICONS_PNG_FORMAT")
-            .into(weatherIcon)
-
+        Glide.with(context).load(WeatherAPI().getIconsURL(weather.icon)).into(weatherIcon)
         date.text = weather.date
         date.isVisible = weather.date != null
         name.text = weather.hour

@@ -31,6 +31,9 @@
     <string name="gps_not_activated_description">Моля, активирайте GPS, за да продължите.</string>
     <string name="continue_action">Продължи</string>
     <string name="cancel_action">Откажи</string>
+    <string name="reload">Презареждане</string>
+    <string name="ok_action">ОК</string>
     <string name="activate">Активирай</string>
-    <string name="error_title">Възникна грешка. Опитайте отново.</string>
+    <string name="error_title">Грешка</string>
+    <string name="error_description">Възникна проблем при обработката на заявката.</string>
 </resources>

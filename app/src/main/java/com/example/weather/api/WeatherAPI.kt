@@ -15,17 +15,21 @@ import java.io.IOException
 import java.net.URL
 import kotlin.math.roundToInt
 
+const val LANG = "bg"
+
 internal class WeatherAPI {
 
     private val baseURL = "https://api.openweathermap.org/data/2.5"
     private val unit = "metric"
-    private val lang = "bg"
     private val key = BuildConfig.WEATHER_API_KEY
+
+    private val iconsBaseURL = "https://openweathermap.org/img/wn/"
+    private val iconsPNGFormat = "@2x.png"
 
     fun getCurrentWeather(locations: List<Location>) = locations.mapNotNull { (name, lat, lon) ->
         try {
             val response = jsonParse<CurrentWeatherResponse>(
-                URL("$baseURL/weather?lat=${lat}&lon=${lon}&units=$unit&lang=$lang&appid=$key").readText()
+                URL("$baseURL/weather?lat=${lat}&lon=${lon}&units=$unit&lang=$LANG&appid=$key").readText()
             )
 
             CurrentWeather(
@@ -50,7 +54,7 @@ internal class WeatherAPI {
 
     fun getFutureWeather(lat: Double, lon: Double) = try {
         val response = jsonParse<FutureWeatherResponse>(
-            URL("$baseURL/forecast?lat=$lat&lon=$lon&units=$unit&lang=$lang&appid=$key").readText()
+            URL("$baseURL/forecast?lat=$lat&lon=$lon&units=$unit&lang=$LANG&appid=$key").readText()
         )
 
         var previousDate = ""
@@ -74,6 +78,8 @@ internal class WeatherAPI {
         }
     } catch (e: IOException) {
         Log.e("getFutureWeather", e.toString())
-        null
+        listOf()
     }
+
+    fun getIconsURL(icon: String) = "$iconsBaseURL$icon$iconsPNGFormat"
 }

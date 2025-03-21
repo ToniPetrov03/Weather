@@ -11,8 +11,7 @@ import com.bumptech.glide.Glide
 import com.example.weather.R
 import com.example.weather.models.CurrentWeather
 import com.example.weather.databinding.WeatherCardBinding
-import com.example.weather.utils.ICONS_BASE_URL
-import com.example.weather.utils.ICONS_PNG_FORMAT
+import com.example.weather.api.WeatherAPI
 import com.example.weather.utils.formatDateTime
 import com.example.weather.utils.mapWindSpeedToText
 
@@ -29,12 +28,6 @@ internal class CurrentWeatherAdapter(
     override fun onBindViewHolder(holder: CurrentWeatherViewHolder, position: Int) {
         holder.bind(getItem(position))
     }
-
-    fun removeItem(weather: CurrentWeather) {
-        val updatedList = currentList.toMutableList()
-        updatedList.remove(weather)
-        submitList(updatedList)
-    }
 }
 
 internal class CurrentWeatherViewHolder(
@@ -45,8 +38,7 @@ internal class CurrentWeatherViewHolder(
     fun bind(weather: CurrentWeather) = with(binding) {
         val context = root.context
 
-        Glide.with(context).load("$ICONS_BASE_URL${weather.icon}$ICONS_PNG_FORMAT").into(weatherIcon)
-
+        Glide.with(context).load(WeatherAPI().getIconsURL(weather.icon)).into(weatherIcon)
         name.text = weather.name
         description.text = weather.description
         temperature.text = context.getString(R.string.temperature, weather.temperature)
@@ -65,8 +57,9 @@ internal class CurrentWeatherViewHolder(
                 )
                 .setPositiveButton(context.getString(R.string.continue_action)) { _, _ ->
                     onRemoveListener(weather)
-
-                }.setNegativeButton(context.getString(R.string.cancel_action), null).create().show()
+                }.setNegativeButton(
+                    context.getString(R.string.cancel_action), null
+                ).create().show()
         }
 
         cardView.setOnClickListener { onClickListener(weather) }

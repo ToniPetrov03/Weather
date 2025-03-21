@@ -1,6 +1,7 @@
 package com.example.weather.utils
 
 import android.content.Context
+import android.content.SharedPreferences
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import androidx.core.content.edit
@@ -12,27 +13,22 @@ const val PROP_LOCATIONS = "locations"
 inline fun <reified T> jsonParse(json: String): T =
     Gson().fromJson(json, object : TypeToken<T>() {}.type)
 
-private fun getPreferences(context: Context) =
+private fun getPreferences(context: Context): SharedPreferences =
     context.getSharedPreferences(WEATHER_PREFERENCE_FILE_NAME, Context.MODE_PRIVATE)
 
-fun getLocationsPreference(context: Context): List<Location> =
-    getPreferences(context).getString(PROP_LOCATIONS, null)?.let { jsonParse(it) } ?: listOf()
+private fun SharedPreferences.getLocationsPreference(): List<Location> =
+    getString(PROP_LOCATIONS, null)?.let { jsonParse(it) } ?: listOf()
 
-fun addLocationPreference(context: Context, value: Location) {
-    val locations = getLocationsPreference(context).toMutableList()
-
-    locations.add(value)
-
-    getPreferences(context).edit {
-        putString(PROP_LOCATIONS, Gson().toJson(locations))
-    }
+private fun SharedPreferences.updateLocationPreference(locations: List<Location>) = edit {
+    putString(PROP_LOCATIONS, Gson().toJson(locations))
 }
 
-fun removeLocationPreference(context: Context, value: Location) {
-    val locations = getLocationsPreference(context).toMutableList()
-    locations.removeIf { it == value }
+fun getLocationsPreference(context: Context) = getPreferences(context).getLocationsPreference()
 
-    getPreferences(context).edit {
-        putString(PROP_LOCATIONS, Gson().toJson(locations))
-    }
+fun addLocationPreference(context: Context, value: Location) = getPreferences(context).apply {
+    updateLocationPreference(getLocationsPreference() + value)
+}
+
+fun removeLocationPreference(context: Context, value: Location) = getPreferences(context).apply {
+    updateLocationPreference(getLocationsPreference() - value)
 }

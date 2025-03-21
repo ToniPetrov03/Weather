@@ -23,16 +23,12 @@ import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.Marker
 
-class AddLocationFragment : Fragment(R.layout.fragment_add_location), LocationCallback {
+class AddLocationFragment : Fragment(R.layout.fragment_add_location) {
 
     private var _binding: FragmentAddLocationBinding? = null
     private val binding get() = _binding!!
 
-    private val defaultLan = 42.7
-    private val defaultLon = 23.3
-    private val defaultZoom = 15.0
-
-    private lateinit var selectedLocation: GeoPoint
+    private var selectedLocation = GeoPoint(42.7, 23.34)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -43,40 +39,14 @@ class AddLocationFragment : Fragment(R.layout.fragment_add_location), LocationCa
 
         Configuration.getInstance().userAgentValue = BuildConfig.APPLICATION_ID
 
-        selectedLocation = GeoPoint(defaultLan, defaultLon)
-
         setupViews()
-    }
-
-    override fun onLocationReceived(location: GeoPoint) = with(binding) {
-        toggleVisibility(spinner, currentLocationButton)
-        selectedLocation = location
-        map.controller.animateTo(location)
-        updateMarker(map)
-    }
-
-    override fun onNoLocationPermission() {
-        toggleVisibility(binding.spinner, binding.currentLocationButton)
-        requestLocationPermission(requireActivity())
-    }
-
-    override fun onNoLocationProvided() {
-        toggleVisibility(binding.spinner, binding.currentLocationButton)
-        AlertDialog.Builder(requireContext())
-            .setTitle(getString(R.string.gps_not_activated_title))
-            .setMessage(getString(R.string.gps_not_activated_description))
-            .setPositiveButton(getString(R.string.activate)) { _, _ ->
-                requestTurnOnGPS(requireActivity())
-            }
-            .setNegativeButton(getString(R.string.cancel_action), null)
-            .show()
     }
 
     @SuppressLint("ClickableViewAccessibility")
     private fun setupViews() = with(binding) {
         map.setMultiTouchControls(true)
         map.controller.setCenter(selectedLocation)
-        map.controller.setZoom(defaultZoom)
+        map.controller.setZoom(13.0)
 
         updateMarker(map)
 
@@ -91,10 +61,33 @@ class AddLocationFragment : Fragment(R.layout.fragment_add_location), LocationCa
 
         currentLocationButton.setOnClickListener {
             toggleVisibility(spinner, currentLocationButton)
-            getCurrentLocation(requireContext(), this@AddLocationFragment)
+            getCurrentLocation(requireContext(), object : LocationCallback {
+                override fun onLocationReceived(location: GeoPoint) = with(binding) {
+                    toggleVisibility(spinner, currentLocationButton)
+                    selectedLocation = location
+                    map.controller.animateTo(location)
+                    updateMarker(map)
+                }
+
+                override fun onNoLocationPermission() {
+                    toggleVisibility(spinner, currentLocationButton)
+                    requestLocationPermission(requireActivity())
+                }
+
+                override fun onNoLocationProvided() {
+                    toggleVisibility(spinner, currentLocationButton)
+                    AlertDialog.Builder(requireContext())
+                        .setTitle(getString(R.string.gps_not_activated_title))
+                        .setMessage(getString(R.string.gps_not_activated_description))
+                        .setPositiveButton(getString(R.string.activate)) { _, _ ->
+                            requestTurnOnGPS(requireActivity())
+                        }
+                        .setNegativeButton(getString(R.string.cancel_action), null)
+                        .show()
+                }
+            })
         }
 
-        locationName.requestFocus()
         locationName.doAfterTextChanged { addButton.isEnabled = !it.isNullOrEmpty() }
 
         addButton.setOnClickListener {
