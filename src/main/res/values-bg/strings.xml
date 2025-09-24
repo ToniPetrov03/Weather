@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="add_location">Добави локация</string>
+    <string name="back">Назад</string>
+    <string name="calm">Безветрие</string>
+    <string name="cancel_action">Откажи</string>
+    <string name="chance_of_rain">Вероятност за валежи: %d%%</string>
+    <string name="cloudiness">Облачност: %d%%</string>
+    <string name="continue_action">Продължи</string>
+    <string name="current_location">Текуща локация</string>
+    <string name="error_message">Възникна проблем при обработката на заявката. Моля, опитайте отново.</string>
+    <string name="feels_like">Усеща се: %d°C</string>
+    <string name="forecast_title">5-дневна прогноза</string>
+    <string name="fresh_breeze">Много силен вятър</string>
+    <string name="gentle_breeze">Умерен вятър</string>
+    <string name="language">Език</string>
+    <string name="light_air">Слаб вятър</string>
+    <string name="light_breeze">Слаб до умерен вятър</string>
+    <string name="moderate_breeze">Силен вятър</string>
+    <string name="name_of_location">Име на локацията</string>
+    <string name="new_location">Нова локация</string>
+    <string name="reload">Презареждане</string>
+    <string name="removing_location_description">Сигурен ли си, че искаш да премахнеш локацията \"%s\"?</string>
+    <string name="removing_location_title">Премахване на локацията</string>
+    <string name="settings">Настройки</string>
+    <string name="storm">Ураган</string>
+    <string name="strong_gale">Силна буря</string>
+    <string name="sunrise_sunset">Изгрев / Залез: %s / %s</string>
+    <string name="temperature">%d°C</string>
+    <string name="violent_storm">Ураган със сила на унищожение</string>
+    <string name="weather">Времето</string>
+    <string name="wind">Вятър</string>
+    <string name="wind_speed">%s: %d м/с</string>
+    <string name="whole_gale">Много силна буря</string>
+</resources>

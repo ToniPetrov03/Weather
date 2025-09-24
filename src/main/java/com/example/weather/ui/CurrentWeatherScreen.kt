@@ -41,8 +41,6 @@ import androidx.compose.ui.unit.sp
 import com.example.weather.R
 import com.example.weather.api.CurrentWeather
 import com.example.weather.models.ResponseState
-import com.example.weather.utils.PreferenceUtils.getLocationsPreference
-import com.example.weather.utils.PreferenceUtils.removeLocationPreference
 import com.example.weather.utils.Utils.mapWindSpeedToText
 import org.osmdroid.util.GeoPoint
 
@@ -58,11 +56,11 @@ fun CurrentWeatherScreen(
     val isLoading = state is ResponseState.Loading
     val refreshState = rememberPullRefreshState(
         refreshing = isLoading,
-        onRefresh = { viewModel.getCurrentWeather(getLocationsPreference(context), true) }
+        onRefresh = { viewModel.getCurrentWeather(true) }
     )
 
     LaunchedEffect(Unit) {
-        viewModel.getCurrentWeather(getLocationsPreference(context))
+        viewModel.getCurrentWeather()
     }
 
     Scaffold(
@@ -98,10 +96,7 @@ fun CurrentWeatherScreen(
                             CurrentWeatherCard(
                                 weather = it,
                                 onClick = { onOpenDetails(it.geoPoint) },
-                                onRemove = {
-                                    removeLocationPreference(context, it.geoPoint)
-                                    viewModel.removeCurrentWeatherItem(it)
-                                }
+                                onRemove = { viewModel.removeCurrentWeatherItem(it) }
                             )
                         }
                     }

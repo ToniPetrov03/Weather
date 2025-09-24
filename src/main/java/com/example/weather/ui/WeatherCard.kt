@@ -21,7 +21,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.example.weather.R
-import com.example.weather.api.WeatherAPI
 
 @Composable
 fun WeatherCard(
@@ -46,7 +45,7 @@ fun WeatherCard(
         Column(modifier = Modifier.padding(16.dp)) {
             Row {
                 AsyncImage(
-                    model = WeatherAPI.getIconURL(icon),
+                    model = icon,
                     contentDescription = null,
                     modifier = Modifier
                         .size(48.dp)

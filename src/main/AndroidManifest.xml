@@ -9,6 +9,7 @@
     <application
         android:icon="@drawable/ic_launcher"
         android:label="@string/weather"
+        android:localeConfig="@xml/locales_config"
         android:theme="@android:style/Theme.NoTitleBar">
 
         <activity

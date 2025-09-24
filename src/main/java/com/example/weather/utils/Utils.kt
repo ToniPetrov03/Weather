@@ -1,14 +1,20 @@
 package com.example.weather.utils
 
+import android.app.LocaleManager
 import android.content.Context
 import com.example.weather.R
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import java.util.Locale
 
 internal object Utils {
 
     inline fun <reified T> jsonParse(json: String): T =
         Gson().fromJson(json, object : TypeToken<T>() {}.type)
+
+    fun getLocale(context: Context): Locale =
+        context.getSystemService(LocaleManager::class.java).applicationLocales[0]
+            ?: Locale.getDefault()
 
     fun capitalize(text: String) = text.replaceFirstChar { it.uppercaseChar() }
 

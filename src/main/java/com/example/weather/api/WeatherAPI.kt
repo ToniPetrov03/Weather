@@ -13,35 +13,37 @@ import kotlinx.coroutines.withContext
 import org.osmdroid.util.GeoPoint
 import java.io.IOException
 import java.net.URL
+import java.util.Locale
 import kotlin.math.roundToInt
 
-const val LANG = "bg"
+class WeatherAPI(private val locale: Locale) {
 
-internal object WeatherAPI {
-
-    private const val WEATHER_BASE_URL = "https://api.openweathermap.org/data/2.5"
-    private const val UNIT = "metric"
-    private const val KEY = BuildConfig.WEATHER_API_KEY
+    companion object {
+        private const val WEATHER_BASE_URL = "https://api.openweathermap.org/data/2.5"
+        private const val UNIT = "metric"
+        private const val KEY = BuildConfig.WEATHER_API_KEY
+        private fun getIconURL(icon: String) = "https://openweathermap.org/img/wn/$icon@2x.png"
+    }
 
     suspend fun getCurrentWeather(locations: List<GeoPoint>) = supervisorScope {
         locations.map {
             async(Dispatchers.IO) {
                 try {
                     val response = jsonParse<CurrentWeatherResponse>(
-                        URL("$WEATHER_BASE_URL/weather?lat=${it.latitude}&lon=${it.longitude}&units=$UNIT&lang=$LANG&appid=$KEY").readText()
+                        URL("$WEATHER_BASE_URL/weather?lat=${it.latitude}&lon=${it.longitude}&units=$UNIT&lang=${locale.language}&appid=$KEY").readText()
                     )
 
                     CurrentWeather(
                         geoPoint = it,
                         id = response.id,
                         name = response.name,
-                        icon = response.weather[0].icon,
                         windSpeed = response.wind.speed,
                         cloudiness = response.clouds.all,
-                        sunset = formatTime(response.sys.sunset),
-                        sunrise = formatTime(response.sys.sunrise),
+                        icon = getIconURL(response.weather[0].icon),
                         temperature = response.main.temp.roundToInt(),
                         feelsLike = response.main.feels_like.roundToInt(),
+                        sunset = formatTime(response.sys.sunset, locale),
+                        sunrise = formatTime(response.sys.sunrise, locale),
                         description = capitalize(response.weather[0].description),
                     )
                 } catch (_: IOException) {
@@ -54,23 +56,23 @@ internal object WeatherAPI {
     suspend fun getFutureWeather(geoPoint: GeoPoint) = withContext(Dispatchers.IO) {
         try {
             val response = jsonParse<FutureWeatherResponse>(
-                URL("$WEATHER_BASE_URL/forecast?lat=${geoPoint.latitude}&lon=${geoPoint.longitude}&units=$UNIT&lang=$LANG&appid=$KEY").readText()
+                URL("$WEATHER_BASE_URL/forecast?lat=${geoPoint.latitude}&lon=${geoPoint.longitude}&units=$UNIT&lang=${locale.language}&appid=$KEY").readText()
             )
 
             var previousDate = ""
 
             response.list.map {
-                val formattedDate = capitalize(formatDate(it.dt))
+                val formattedDate = capitalize(formatDate(it.dt, locale))
                 val date = formattedDate.takeIf { previousDate != formattedDate }
                 previousDate = formattedDate
 
                 FutureWeather(
                     id = it.dt,
                     date = date,
-                    hour = formatTime(it.dt),
-                    icon = it.weather[0].icon,
                     windSpeed = it.wind.speed,
                     cloudiness = it.clouds.all,
+                    hour = formatTime(it.dt, locale),
+                    icon = getIconURL(it.weather[0].icon),
                     temperature = it.main.temp.roundToInt(),
                     chanceOfRain = (it.pop * 100).roundToInt(),
                     feelsLike = it.main.feels_like.roundToInt(),
@@ -81,6 +83,4 @@ internal object WeatherAPI {
             listOf()
         }
     }
-
-    fun getIconURL(icon: String) = "https://openweathermap.org/img/wn/$icon@2x.png"
 }

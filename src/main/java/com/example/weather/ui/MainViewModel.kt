@@ -1,17 +1,24 @@
 package com.example.weather.ui
 
-import androidx.lifecycle.ViewModel
+import android.app.Application
+import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.application
 import androidx.lifecycle.viewModelScope
 import com.example.weather.api.CurrentWeather
 import com.example.weather.api.FutureWeather
 import com.example.weather.api.WeatherAPI
 import com.example.weather.models.ResponseState
+import com.example.weather.utils.PreferenceUtils.getLocationsPreference
+import com.example.weather.utils.PreferenceUtils.removeLocationPreference
+import com.example.weather.utils.Utils.getLocale
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import org.osmdroid.util.GeoPoint
 
-class MainViewModel : ViewModel() {
+class MainViewModel(application: Application) : AndroidViewModel(application) {
+
+    private val weatherAPI = WeatherAPI(getLocale(application.applicationContext))
 
     private val _currentWeatherState =
         MutableStateFlow<ResponseState<List<CurrentWeather>>>(ResponseState.Loading)
@@ -23,6 +30,7 @@ class MainViewModel : ViewModel() {
     val futureWeatherState = _futureWeatherState.asStateFlow()
 
     fun removeCurrentWeatherItem(item: CurrentWeather) {
+        removeLocationPreference(application.applicationContext, item.geoPoint)
         _currentWeatherState.value.let {
             if (it is ResponseState.Success) {
                 _currentWeatherState.value = ResponseState.Success(it.body - item)
@@ -30,7 +38,9 @@ class MainViewModel : ViewModel() {
         }
     }
 
-    fun getCurrentWeather(locations: List<GeoPoint>, forceRefresh: Boolean = false) {
+    fun getCurrentWeather(forceRefresh: Boolean = false) {
+        val locations = getLocationsPreference(application.applicationContext)
+
         _currentWeatherState.value.let {
             if (!forceRefresh && it is ResponseState.Success && it.body.size == locations.size) {
                 return
@@ -40,7 +50,7 @@ class MainViewModel : ViewModel() {
         viewModelScope.launch {
             _currentWeatherState.emit(ResponseState.Loading)
 
-            val response = WeatherAPI.getCurrentWeather(locations)
+            val response = weatherAPI.getCurrentWeather(locations)
 
             if (locations.isNotEmpty() && response.isEmpty()) {
                 _currentWeatherState.emit(ResponseState.Error)
@@ -61,7 +71,7 @@ class MainViewModel : ViewModel() {
         viewModelScope.launch {
             _futureWeatherState.emit(ResponseState.Loading)
 
-            val response = WeatherAPI.getFutureWeather(geoPoint)
+            val response = weatherAPI.getFutureWeather(geoPoint)
 
             if (response.isEmpty()) {
                 _futureWeatherState.emit(ResponseState.Error)
